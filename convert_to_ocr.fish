@@ -25,12 +25,21 @@ for pdf in $source_dir/*.pdf
     # Append "_ocr" to the filename
     set new_filename "$filename"_ocr.pdf
     
-    # Run ocrmypdf on the file
-    ocrmypdf -s "$pdf" "$output_dir/$new_filename"
+    # Check if the processed PDF already exists in the output directory
+    if not test -e "$output_dir/$new_filename"
+        # Run ocrmypdf on the file
+        ocrmypdf -s -l swe+eng+osd "$pdf" "$output_dir/$new_filename"
 
-    # Increment the completed counter and report progress
-    set completed (math $completed+1)
-    echo "Completed $filename. Now done $completed out of $total_pdfs"
+        # Increment the completed counter and report the progress
+        set completed (math $completed+1)
+        echo "Completed $filename. Now done $completed out of $total_pdfs"
+    else
+        # Skip it if it already exists
+        echo "Skipping $filename as it already exists in the output directory."
+
+        # Increment the completed counter
+        set completed (math $completed+1)
+    end
 end
 
 echo "All done!"
